@@ -1,0 +1,9 @@
+meridian_module(mer_timeline
+  SOURCES
+    Segment.cpp
+    Track.cpp
+    Timeline.cpp
+    builder/TimelineBuilder.cpp
+    builder/SegmentDecorator.cpp
+  PUBLIC_DEPS
+    Meridian::mer_project)

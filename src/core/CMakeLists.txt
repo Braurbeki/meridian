@@ -1,0 +1,13 @@
+meridian_module(mer_core
+  SOURCES
+    MetadataValue.cpp
+    MetadataDict.cpp
+    MediaSource.cpp
+    MediaProbe.cpp
+    TimeTypes.cpp
+  PUBLIC_DEPS
+    Meridian::mer_util
+  PRIVATE_DEPS
+    FFmpeg::avformat
+    FFmpeg::avcodec
+    FFmpeg::avutil)

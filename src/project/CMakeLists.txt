@@ -1,0 +1,11 @@
+meridian_module(mer_project
+  SOURCES
+    Clip.cpp
+    Bin.cpp
+    Project.cpp
+    ProjectReader.cpp
+    ProjectWriter.cpp
+    MediaLibrary.cpp
+  PUBLIC_DEPS
+    Meridian::mer_core
+    Qt6::Core)

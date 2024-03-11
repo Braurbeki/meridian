@@ -1,0 +1,278 @@
+{
+  "formatVersion": 7,
+  "name": "Riverdale Doc - Reel 1",
+  "media": [
+    {
+      "id": "8d9e1874-3e59-47ab-960e-7682b4e0cf5a",
+      "path": "media/A001_C012_0714XY.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "0f5dd743-9ad5-41d7-ac19-708d3ede5f9e",
+      "path": "media/A001_C013_0714XY.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "84b1ee02-9653-43b2-b473-ed216fa6640d",
+      "path": "media/A001_C014_0714XY.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "d93ab9c6-db44-4158-a9f3-893d2a796c44",
+      "path": "media/A001_C015_0714XY.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "8dd7f0d2-f4f5-42af-be24-1abaad9e3156",
+      "path": "media/B002_C003_0715ZQ.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "007b9d90-3573-4394-bb47-77e85c0c1764",
+      "path": "media/B002_C004_0715ZQ.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "04f6628a-af61-4eac-a9b7-3d333b4daa5c",
+      "path": "media/A001_C016_0714XY.mp4",
+      "duration": 2.0,
+      "metadata": {}
+    },
+    {
+      "id": "0defc041-dc64-4c9b-9453-13992066065f",
+      "path": "media/INT_ROOMTONE_0714.wav",
+      "duration": 6.0,
+      "metadata": {}
+    }
+  ],
+  "clips": [
+    {
+      "id": "285e5c1e-4b98-4b3e-bb33-1a6ea2dd0c6c",
+      "mediaId": "8d9e1874-3e59-47ab-960e-7682b4e0cf5a",
+      "name": "Wide - riverbank",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "12",
+        "take": "1",
+        "shoot_day": "2026-07-14",
+        "title": "Scene 12 - Establishing"
+      }
+    },
+    {
+      "id": "2d166599-7993-47c3-907c-53a16276e3bc",
+      "mediaId": "0f5dd743-9ad5-41d7-ac19-708d3ede5f9e",
+      "name": "",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "12",
+        "take": "3",
+        "shoot_day": "2026-07-14",
+        "title": "Scene 12 - Approach"
+      }
+    },
+    {
+      "id": "5b777574-8a2b-403c-b2bd-2babd3af54cd",
+      "mediaId": "84b1ee02-9653-43b2-b473-ed216fa6640d",
+      "name": "",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "12",
+        "take": "4",
+        "shoot_day": "2026-07-14",
+        "ingest_tool": "ReelFlow 3.2",
+        "title": ""
+      }
+    },
+    {
+      "id": "40232072-d632-40e0-b2bf-d075d886f0cb",
+      "mediaId": "d93ab9c6-db44-4158-a9f3-893d2a796c44",
+      "name": "",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "13",
+        "take": "1",
+        "shoot_day": "2026-07-14"
+      }
+    },
+    {
+      "id": "211118d8-c39b-471e-83bd-8c227e07f388",
+      "mediaId": "8dd7f0d2-f4f5-42af-be24-1abaad9e3156",
+      "name": "",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "14",
+        "take": "2",
+        "shoot_day": "2026-07-15",
+        "ingest_tool": "ReelFlow 3.2",
+        "title": ""
+      }
+    },
+    {
+      "id": "8a9016b0-d4e9-4f0d-832d-b2ca5b0fbf40",
+      "mediaId": "007b9d90-3573-4394-bb47-77e85c0c1764",
+      "name": "CU - hands",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "14",
+        "take": "5",
+        "shoot_day": "2026-07-15",
+        "title": "Scene 14 - Insert"
+      }
+    },
+    {
+      "id": "9a3597c8-ada3-4e1a-8dfb-80ec1ed7404a",
+      "mediaId": "04f6628a-af61-4eac-a9b7-3d333b4daa5c",
+      "name": "",
+      "startFrame": 0,
+      "frameCount": 50,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "12",
+        "take": "6",
+        "shoot_day": "2026-07-14",
+        "title": "Scene 12 - Reverse"
+      }
+    },
+    {
+      "id": "32b2479c-1ea5-491b-96dd-7da2d4c37c04",
+      "mediaId": "0defc041-dc64-4c9b-9453-13992066065f",
+      "name": "",
+      "startFrame": 0,
+      "frameCount": 150,
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "metadata": {
+        "scene": "12",
+        "ingest_tool": "ReelFlow 3.2",
+        "title": ""
+      }
+    }
+  ],
+  "timelines": [
+    {
+      "id": "6017c0db-5f9d-4dc4-bfa8-a8c2a22cbb66",
+      "name": "R1 rough cut v14",
+      "rate": {
+        "num": 25,
+        "den": 1
+      },
+      "tracks": [
+        {
+          "id": "a50cb458-b3b4-4f82-bcf2-b85eb9bac022",
+          "name": "V1",
+          "kind": "video",
+          "muted": false,
+          "locked": false,
+          "segments": [
+            {
+              "id": "39743067-d8ec-4a22-94ef-e9a0cf341d42",
+              "clipId": "285e5c1e-4b98-4b3e-bb33-1a6ea2dd0c6c",
+              "timelineStart": 0,
+              "sourceStart": 0,
+              "frameCount": 50
+            },
+            {
+              "id": "5f0326cf-437d-49ea-adaa-ed2c61db78fe",
+              "clipId": "2d166599-7993-47c3-907c-53a16276e3bc",
+              "timelineStart": 50,
+              "sourceStart": 0,
+              "frameCount": 50
+            },
+            {
+              "id": "2eaffc5e-b9e3-4861-9254-0130ba0e3b77",
+              "clipId": "5b777574-8a2b-403c-b2bd-2babd3af54cd",
+              "timelineStart": 100,
+              "sourceStart": 0,
+              "frameCount": 50
+            },
+            {
+              "id": "a7efe2ef-d567-4414-afe5-7b6e67138a44",
+              "clipId": "40232072-d632-40e0-b2bf-d075d886f0cb",
+              "timelineStart": 150,
+              "sourceStart": 0,
+              "frameCount": 50
+            },
+            {
+              "id": "20709cb6-50fa-4d66-af45-fc8e230991d5",
+              "clipId": "211118d8-c39b-471e-83bd-8c227e07f388",
+              "timelineStart": 200,
+              "sourceStart": 0,
+              "frameCount": 50
+            },
+            {
+              "id": "7468ae86-32fb-4050-a85c-d0298d07973d",
+              "clipId": "8a9016b0-d4e9-4f0d-832d-b2ca5b0fbf40",
+              "timelineStart": 250,
+              "sourceStart": 0,
+              "frameCount": 50
+            },
+            {
+              "id": "06330ab3-27cb-4e22-90ba-c0a521806792",
+              "clipId": "9a3597c8-ada3-4e1a-8dfb-80ec1ed7404a",
+              "timelineStart": 300,
+              "sourceStart": 0,
+              "frameCount": 50
+            }
+          ]
+        },
+        {
+          "id": "9903d6c3-9d85-4e4d-8ca6-3e09c9fcd2e2",
+          "name": "A1",
+          "kind": "audio",
+          "muted": false,
+          "locked": false,
+          "segments": [
+            {
+              "id": "b77ccee5-c461-4bb0-ba79-09e229368eaf",
+              "clipId": "32b2479c-1ea5-491b-96dd-7da2d4c37c04",
+              "timelineStart": 0,
+              "sourceStart": 0,
+              "frameCount": 150
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
