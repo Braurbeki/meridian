@@ -1,6 +1,7 @@
 #include "ui/MainWindow.h"
 
 #include "timeline/builder/TimelineBuilder.h"
+#include "compat/v1/LegacyProjectImporter.h"
 #include "plugins/ExportPlugin.h"
 #include "plugins/PluginRegistry.h"
 #include "project/ProjectReader.h"
@@ -156,7 +157,7 @@ void MainWindow::onOpenProject()
     const QString dir = AppSettings::instance().lastProjectDir();
     const QString path = QFileDialog::getOpenFileName(
         this, tr("Open Project"), dir,
-        tr("Meridian projects (*.mrp);;All files (*)"));
+        tr("Meridian projects (*.mrp *.mrpx);;All files (*)"));
     if (!path.isEmpty()) {
         openProject(path);
     }
@@ -168,8 +169,13 @@ bool MainWindow::openProject(const QString& path)
 
     const std::string stdPath = path.toStdString();
 
-    const project::ProjectReader reader;
-    project_ = reader.read(stdPath, diagnostics_);
+    if (compat::v1::LegacyProjectImporter::canImport(stdPath)) {
+        const compat::v1::LegacyProjectImporter importer;
+        project_ = importer.import(stdPath, diagnostics_);
+    } else {
+        const project::ProjectReader reader;
+        project_ = reader.read(stdPath, diagnostics_);
+    }
 
     console_->show(diagnostics_);
 
