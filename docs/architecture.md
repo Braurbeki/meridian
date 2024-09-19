@@ -61,3 +61,6 @@ MERIDIAN_LOG_CHANNELS=timeline,resolve ./meridian project.mrp
 
 Channels: `project`, `media`, `timeline`, `playback`, `plugins`, `compat`,
 `diag`. `*` enables everything.
+
+`meridian --dump-labels <project>` builds the first sequence and prints its
+segment captions without opening a window.

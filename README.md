@@ -31,13 +31,20 @@ VS Code users: `.devcontainer/` opens the same image.
 ./build/bin/meridian sample/RiverdaleDoc.mrp
 ```
 
-The GUI needs a display.
+The GUI needs a display. Inside the container without one, use the headless
+entry points:
+
+```sh
+./build/bin/meridian --dump-labels sample/RiverdaleDoc.mrp
+./build/bin/meridian --help
+```
 
 ## Debugging
 
 Every subsystem logs to a named channel, off by default below `info`:
 
 ```sh
+MERIDIAN_LOG_CHANNELS=timeline,project ./build/bin/meridian --dump-labels sample/RiverdaleDoc.mrp
 MERIDIAN_LOG_CHANNELS='*' ./build/bin/meridian sample/RiverdaleDoc.mrp
 ```
 
