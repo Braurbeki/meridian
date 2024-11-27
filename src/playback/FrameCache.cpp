@@ -10,6 +10,8 @@ const CachedFrame* FrameCache::get(std::int64_t frame)
     if (it == entries_.end()) {
         return nullptr;
     }
+    // Touching an entry must move it to the front, or the budget evicts the
+    // frames we are actually scrubbing over.
     order_.erase(it->second.position);
     order_.push_front(frame);
     it->second.position = order_.begin();
