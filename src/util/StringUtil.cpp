@@ -64,6 +64,8 @@ std::string join(const std::vector<std::string>& parts, const std::string& sep)
 
 std::string normalizeSeparators(const std::string& path)
 {
+    // Project files store POSIX separators on every platform, but paths that
+    // arrive from a Windows host or a v1 document do not.
     std::string out = path;
     std::replace(out.begin(), out.end(), '\\', '/');
     return out;
