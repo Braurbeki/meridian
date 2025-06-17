@@ -23,6 +23,7 @@ set(CMAKE_AUTORCC ON)
 # --- module graph ---------------------------------------------------------
 add_subdirectory(src/util)
 add_subdirectory(src/core)
+add_subdirectory(src/resolve)
 add_subdirectory(src/project)
 add_subdirectory(src/timeline)
 add_subdirectory(src/playback)
