@@ -1,5 +1,6 @@
 #include "timeline/builder/TimelineBuilder.h"
 
+#include "resolve/ResolverRegistry.h"
 #include "util/Log.h"
 
 namespace mer::timeline {
@@ -12,8 +13,8 @@ TrackKind kindFromString(const std::string& s)
 
 } // namespace
 
-TimelineBuilder::TimelineBuilder(const project::Project& project)
-    : project_(project)
+TimelineBuilder::TimelineBuilder(const project::Project& project, QObject* parent)
+    : QObject(parent), project_(project)
 {
 }
 
@@ -42,7 +43,8 @@ Segment TimelineBuilder::materializeSegment(const project::SegmentSpec& spec,
                   clip->mediaId().toString());
     }
 
-    // Display fields are filled in by the decorator, not here.
+    // Display fields are filled in by the decorator, not here -- see
+    // SegmentDecorator and docs/design/label-resolution.md.
     return segment;
 }
 
@@ -56,8 +58,11 @@ Track TimelineBuilder::buildTrack(const project::TrackSpec& trackSpec, int index
     track.setMuted(trackSpec.muted);
     track.setLocked(trackSpec.locked);
 
-    track.setHeader(trackSpec.name.empty() ? "V" + std::to_string(index + 1)
-                                           : trackSpec.name);
+    resolve::ResolveContext headerCtx;
+    headerCtx.trackName  = trackSpec.name;
+    headerCtx.trackIndex = index;
+    track.setHeader(
+        resolve::ResolverRegistry::instance().resolve("track.header", headerCtx));
 
     for (const auto& segSpec : trackSpec.segments) {
         Segment segment = materializeSegment(segSpec, sink);
@@ -78,10 +83,17 @@ TimelinePtr TimelineBuilder::build(const project::TimelineSpec& spec,
 
     const SegmentDecorator decorator(project_, decoratorSettings_);
 
+    const_cast<TimelineBuilder*>(this)->buildStarted(
+        static_cast<int>(spec.tracks.size()));
+
     for (std::size_t i = 0; i < spec.tracks.size(); ++i) {
         timeline->add(
             buildTrack(spec.tracks[i], static_cast<int>(i), decorator, sink));
+        const_cast<TimelineBuilder*>(this)->trackBuilt(static_cast<int>(i));
     }
+
+    const_cast<TimelineBuilder*>(this)->buildFinished(
+        static_cast<qint64>(timeline->segmentCount()));
 
     MER_INFO("timeline") << "built '" << timeline->name() << "' tracks="
                          << timeline->tracks().size()

@@ -213,7 +213,7 @@ void MainWindow::rebuildTimeline()
     decoratorSettings.truncateLabels = settings.truncateLabels();
     decoratorSettings.maxLabelChars  = settings.maxLabelChars();
 
-    timeline::TimelineBuilder builder(*project_);
+    timeline::TimelineBuilder builder(*project_, this);
     builder.setDecoratorSettings(decoratorSettings);
 
     timeline_ = builder.build(project_->timelines().front(), diagnostics_);

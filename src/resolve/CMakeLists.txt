@@ -2,5 +2,8 @@ meridian_module(mer_resolve
   SOURCES
     ResolverRegistry.cpp
     ResolveContext.cpp
+    resolvers/SegmentLabelResolver.cpp
+    resolvers/SegmentTooltipResolver.cpp
+    resolvers/TrackHeaderResolver.cpp
   PUBLIC_DEPS
     Meridian::mer_core)

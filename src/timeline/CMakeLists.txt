@@ -6,4 +6,7 @@ meridian_module(mer_timeline
     builder/TimelineBuilder.cpp
     builder/SegmentDecorator.cpp
   PUBLIC_DEPS
-    Meridian::mer_project)
+    Meridian::mer_project
+    Qt6::Core)
+
+meridian_link_whole(mer_timeline mer_resolve)

@@ -1,15 +1,16 @@
 #pragma once
 #include "project/Project.h"
+#include "resolve/ResolveContext.h"
 #include "timeline/Segment.h"
 
 namespace mer::timeline {
 
-/// Fills in the display-only fields of a Segment (caption, tooltip, media
-/// state).
+/// Fills in the display-only fields of a Segment (label, tooltip, media
+/// state) by asking the resolver registry.
 ///
-/// Split out of TimelineBuilder so that the conform report can decorate
-/// segments it builds itself without duplicating the rules. Nothing here
-/// knows about Qt or painting.
+/// Split out of TimelineBuilder so that the bin list and the conform report
+/// can decorate segments they build themselves without duplicating the
+/// policy. Nothing here knows about Qt or painting.
 class SegmentDecorator {
 public:
     struct Settings {
@@ -31,8 +32,9 @@ public:
                   int trackIndex) const;
 
 private:
-    std::string captionFor(const Segment& segment) const;
-    std::string tooltipFor(const Segment& segment) const;
+    resolve::ResolveContext makeContext(const Segment& segment,
+                                        const std::string& trackName,
+                                        int trackIndex) const;
 
     const project::Project& project_;
     Settings                settings_;

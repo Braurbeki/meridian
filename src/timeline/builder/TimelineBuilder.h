@@ -4,6 +4,8 @@
 #include "timeline/Timeline.h"
 #include "util/Diagnostics.h"
 
+#include <QObject>
+
 namespace mer::timeline {
 
 /// Turns a project::TimelineSpec into a drawable Timeline.
@@ -13,9 +15,12 @@ namespace mer::timeline {
 /// timeline, the bin and the conform report agreeing with one another.
 ///
 /// Rebuilds are cheap (no media I/O) and are expected on every edit.
-class TimelineBuilder {
+class TimelineBuilder : public QObject {
+    Q_OBJECT
+
 public:
-    explicit TimelineBuilder(const project::Project& project);
+    explicit TimelineBuilder(const project::Project& project,
+                             QObject* parent = nullptr);
 
     void setDecoratorSettings(SegmentDecorator::Settings s) { decoratorSettings_ = s; }
 
@@ -25,6 +30,11 @@ public:
     TimelinePtr build(const project::TimelineSpec& spec,
                       util::DiagnosticSink& sink) const;
 
+signals:
+    void buildStarted(int trackCount);
+    void trackBuilt(int index);
+    void buildFinished(qint64 segmentCount);
+
 private:
     Track buildTrack(const project::TrackSpec& trackSpec, int index,
                      const SegmentDecorator& decorator,
@@ -33,8 +43,8 @@ private:
     Segment materializeSegment(const project::SegmentSpec& spec,
                                util::DiagnosticSink& sink) const;
 
-    const project::Project&    project_;
-    SegmentDecorator::Settings decoratorSettings_;
+    const project::Project&     project_;
+    SegmentDecorator::Settings  decoratorSettings_;
 };
 
 } // namespace mer::timeline

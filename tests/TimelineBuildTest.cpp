@@ -63,23 +63,23 @@ std::string labelAt(const timeline::Timeline& tl, std::size_t index)
 
 } // namespace
 
-MER_TEST(captionIsTheFileName)
+MER_TEST(editorialNameWinsOverEverything)
 {
     Fixture f;
     f.addSegment("A001_C012.mxf", "Wide - take 4", true, "Scene 12");
     const auto built = f.build();
-    MER_CHECK_EQ(labelAt(*built, 0), std::string("A001_C012.mxf"));
+    MER_CHECK_EQ(labelAt(*built, 0), std::string("Wide - take 4"));
 }
 
-MER_TEST(captionIgnoresEditorialName)
+MER_TEST(embeddedTitleUsedWhenNoEditorialName)
 {
     Fixture f;
-    f.addSegment("A001_C013.mxf", "Wide - take 4", false, "");
+    f.addSegment("A001_C013.mxf", "", true, "Scene 12");
     const auto built = f.build();
-    MER_CHECK_EQ(labelAt(*built, 0), std::string("A001_C013.mxf"));
+    MER_CHECK_EQ(labelAt(*built, 0), std::string("Scene 12"));
 }
 
-MER_TEST(captionIsEmptyWhenMediaIsMissing)
+MER_TEST(fallsBackToFileName)
 {
     Fixture f;
     f.addSegment("A001_C014.mxf", "", false, "");

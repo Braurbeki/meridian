@@ -1,70 +1,37 @@
 #include "timeline/builder/SegmentDecorator.h"
 
-#include "core/TimeTypes.h"
+#include "resolve/ResolverRegistry.h"
 #include "util/Log.h"
-#include "util/StringUtil.h"
 
 namespace mer::timeline {
-namespace {
 
-std::string truncateMiddle(const std::string& text, std::size_t limit)
+resolve::ResolveContext SegmentDecorator::makeContext(const Segment& segment,
+                                                      const std::string& trackName,
+                                                      int trackIndex) const
 {
-    if (text.size() <= limit || limit < 5) {
-        return text;
-    }
-    const std::size_t head = (limit - 1) / 2;
-    const std::size_t tail = limit - 1 - head;
-    return text.substr(0, head) + "…" + text.substr(text.size() - tail);
-}
+    resolve::ResolveContext ctx;
+    ctx.clipId             = segment.clipId();
+    ctx.media              = segment.media().get();
+    ctx.trackName          = trackName;
+    ctx.trackIndex         = trackIndex;
+    ctx.truncateForDisplay = settings_.truncateLabels;
+    ctx.maxDisplayChars    = settings_.maxLabelChars;
 
-} // namespace
-
-std::string SegmentDecorator::captionFor(const Segment& segment) const
-{
-    if (!segment.media()) {
-        return {};
+    if (const project::ClipPtr clip = project_.findClip(segment.clipId())) {
+        ctx.editorialName = clip->name();
+        ctx.clipMetadata  = &clip->metadata();
     }
-
-    std::string caption = util::trim(segment.media()->fileName());
-    if (settings_.truncateLabels && settings_.maxLabelChars > 0) {
-        caption = truncateMiddle(caption,
-                                 static_cast<std::size_t>(settings_.maxLabelChars));
-    }
-    return caption;
-}
-
-std::string SegmentDecorator::tooltipFor(const Segment& segment) const
-{
-    if (!segment.media()) {
-        return "Offline media";
-    }
-
-    const core::MediaSourcePtr& media = segment.media();
-
-    std::string out;
-    out += "File: " + media->fileName() + "\n";
-    out += "Path: " + media->path() + "\n";
-    if (media->duration() > 0.0) {
-        out += "Duration: " + core::formatDuration(media->duration()) + "\n";
-    }
-    if (const auto* video = media->primaryVideoStream()) {
-        out += "Video: " + video->codec + " " + std::to_string(video->width) + "x"
-             + std::to_string(video->height) + "\n";
-    }
-    if (!media->online()) {
-        out += "Status: OFFLINE\n";
-    }
-    return out;
+    return ctx;
 }
 
 void SegmentDecorator::decorate(Segment& segment, const std::string& trackName,
                                 int trackIndex) const
 {
-    (void)trackName;
-    (void)trackIndex;
+    const resolve::ResolveContext ctx = makeContext(segment, trackName, trackIndex);
+    const auto&                   registry = resolve::ResolverRegistry::instance();
 
-    segment.setLabel(captionFor(segment));
-    segment.setTooltip(tooltipFor(segment));
+    segment.setLabel(registry.resolve("segment.label", ctx));
+    segment.setTooltip(registry.resolve("segment.tooltip", ctx));
     segment.setMediaOnline(segment.media() && segment.media()->online());
 
     MER_TRACE("timeline") << "decorated segment " << segment.id().toString()
