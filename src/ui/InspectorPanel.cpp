@@ -1,5 +1,7 @@
 #include "ui/InspectorPanel.h"
 
+#include "resolve/ResolverRegistry.h"
+
 #include <QHeaderView>
 #include <QLabel>
 #include <QTableWidget>
@@ -67,11 +69,14 @@ void InspectorPanel::showClip(const QString& clipId)
 
     const core::MediaSourcePtr media = project_->media().find(clip->mediaId());
 
-    QString displayName = QString::fromStdString(clip->name());
-    if (displayName.isEmpty() && media) {
-        displayName = QString::fromStdString(media->fileName());
-    }
-    title_->setText(displayName);
+    resolve::ResolveContext ctx;
+    ctx.clipId       = clip->id();
+    ctx.media        = media.get();
+    ctx.editorialName = clip->name();
+    ctx.clipMetadata = &clip->metadata();
+
+    title_->setText(QString::fromStdString(
+        resolve::ResolverRegistry::instance().resolve("clip.displayname", ctx)));
 
     addRow(tr("clip"), QStringLiteral("name"),
            QString::fromStdString(clip->name()), clip->name().empty());

@@ -4,6 +4,8 @@ meridian_module(mer_resolve
     ResolveContext.cpp
     resolvers/SegmentLabelResolver.cpp
     resolvers/SegmentTooltipResolver.cpp
+    resolvers/ClipDisplayNameResolver.cpp
     resolvers/TrackHeaderResolver.cpp
+    resolvers/MediaStatusResolver.cpp
   PUBLIC_DEPS
     Meridian::mer_core)

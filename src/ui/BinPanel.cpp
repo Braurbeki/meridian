@@ -1,6 +1,6 @@
 #include "ui/BinPanel.h"
 
-#include "util/StringUtil.h"
+#include "resolve/ResolverRegistry.h"
 
 #include <QHeaderView>
 
@@ -32,21 +32,19 @@ void BinPanel::addClipRow(const project::Clip& clip)
 {
     const core::MediaSourcePtr media = project_->media().find(clip.mediaId());
 
-    QString displayName = QString::fromStdString(clip.name());
-    if (displayName.isEmpty() && media) {
-        displayName = QString::fromStdString(util::stemName(media->fileName()));
-    }
+    resolve::ResolveContext ctx;
+    ctx.clipId       = clip.id();
+    ctx.media        = media.get();
+    ctx.editorialName = clip.name();
+    ctx.clipMetadata = &clip.metadata();
 
-    QString status = tr("No media");
-    if (media) {
-        status = media->online() ? tr("Online") : tr("Offline");
-    }
+    const auto& registry = resolve::ResolverRegistry::instance();
 
     auto* row = new QTreeWidgetItem(this);
-    row->setText(0, displayName);
+    row->setText(0, QString::fromStdString(registry.resolve("clip.displayname", ctx)));
     row->setText(1, media ? QString::fromStdString(media->fileName()) : tr("--"));
     row->setText(2, QString::number(clip.frameCount()));
-    row->setText(3, status);
+    row->setText(3, QString::fromStdString(registry.resolve("media.status", ctx)));
     row->setData(0, Qt::UserRole, QString::fromStdString(clip.id().toString()));
 }
 
