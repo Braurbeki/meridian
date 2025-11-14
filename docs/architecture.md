@@ -1,5 +1,8 @@
 # Meridian architecture
 
+> Written for 2026.4. Parts of this are out of date; the module list is
+> broadly still right.
+
 Meridian is a sequence review and conform tool: it opens a project, builds a
 timeline from it, plays it back, and exports cut lists. It is not an editor —
 there is no trim model and no undo.
@@ -21,8 +24,11 @@ Dependencies point downward. Nothing below depends on anything above it.
               |
            timeline               Sequence model + the builder
               |
-              |
-           project                Document model, .mrp reader/writer
+    +---------+---------+
+    |                   |
+ project              resolve     Document model | field resolvers
+    |                   |
+    +---------+---------+
               |
             core                  Media, metadata, time types
               |
@@ -42,6 +48,11 @@ libavformat-backed prober.
 The document model — clips, bins, and the *serialised* form of a sequence
 (`TimelineSpec`). Reads and writes `.mrp`.
 
+### resolve
+Named, stateless computations that turn context into display strings,
+registered by key. Panels ask for `"clip.displayname"` rather than
+implementing a naming rule of their own.
+
 ### timeline
 The live sequence model, and `TimelineBuilder`, which turns a `TimelineSpec`
 into a drawable `Timeline`. This is the only place editorial data becomes
@@ -59,8 +70,9 @@ Every module logs to a named channel. Raise one to trace level with:
 MERIDIAN_LOG_CHANNELS=timeline,resolve ./meridian project.mrp
 ```
 
-Channels: `project`, `media`, `timeline`, `playback`, `plugins`, `compat`,
-`diag`. `*` enables everything.
+Channels: `project`, `media`, `timeline`, `resolve`, `playback`, `plugins`,
+`compat`, `diag`. `*` enables everything.
 
+`meridian --list-resolvers` prints every registered resolver key.
 `meridian --dump-labels <project>` builds the first sequence and prints its
 segment captions without opening a window.

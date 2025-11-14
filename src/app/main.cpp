@@ -24,6 +24,9 @@ int main(int argc, char** argv)
         std::cout << "Meridian " << MERIDIAN_VERSION_STRING << "\n";
         return 0;
     }
+    if (options.listResolvers) {
+        return mer::app::runListResolvers();
+    }
     if (options.headless) {
         if (options.projectPath.empty()) {
             std::cerr << "--dump-labels requires a project path\n";

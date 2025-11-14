@@ -2,6 +2,7 @@
 
 #include "timeline/builder/TimelineBuilder.h"
 #include "project/ProjectReader.h"
+#include "resolve/ResolverRegistry.h"
 #include "util/Diagnostics.h"
 #include "util/Log.h"
 
@@ -20,6 +21,8 @@ Options parseCommandLine(const std::vector<std::string>& args)
             options.showVersion = true;
         } else if (arg == "--dump-labels") {
             options.headless = true;
+        } else if (arg == "--list-resolvers") {
+            options.listResolvers = true;
         } else if (!arg.empty() && arg[0] != '-') {
             options.projectPath = arg;
         } else {
@@ -36,14 +39,23 @@ std::string usageText()
         "\n"
         "Options:\n"
         "  --dump-labels      Build the first sequence and print segment captions\n"
+        "  --list-resolvers   Print every registered field resolver key\n"
         "  --version          Print version and exit\n"
         "  -h, --help         Show this help\n"
         "\n"
         "Environment:\n"
         "  MERIDIAN_LOG_CHANNELS   Comma-separated channels to raise to trace\n"
         "                          level, or '*' for all. Channels in use:\n"
-        "                          project, media, timeline, playback,\n"
+        "                          project, media, timeline, resolve, playback,\n"
         "                          plugins, compat, diag\n";
+}
+
+int runListResolvers()
+{
+    for (const auto& key : resolve::ResolverRegistry::instance().keys()) {
+        std::cout << key << "\n";
+    }
+    return 0;
 }
 
 int runDumpLabels(const std::string& projectPath)

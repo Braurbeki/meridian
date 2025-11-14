@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(Meridian VERSION 2026.4.0 LANGUAGES CXX)
+project(Meridian VERSION 2026.12.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

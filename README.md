@@ -36,6 +36,7 @@ entry points:
 
 ```sh
 ./build/bin/meridian --dump-labels sample/RiverdaleDoc.mrp
+./build/bin/meridian --list-resolvers
 ./build/bin/meridian --help
 ```
 
@@ -44,12 +45,12 @@ entry points:
 Every subsystem logs to a named channel, off by default below `info`:
 
 ```sh
-MERIDIAN_LOG_CHANNELS=timeline,project ./build/bin/meridian --dump-labels sample/RiverdaleDoc.mrp
+MERIDIAN_LOG_CHANNELS=timeline,resolve ./build/bin/meridian --dump-labels sample/RiverdaleDoc.mrp
 MERIDIAN_LOG_CHANNELS='*' ./build/bin/meridian sample/RiverdaleDoc.mrp
 ```
 
-Channels: `project`, `media`, `timeline`, `playback`, `plugins`, `compat`,
-`diag`.
+Channels: `project`, `media`, `timeline`, `resolve`, `playback`, `plugins`,
+`compat`, `diag`.
 
 ## Layout
 
@@ -61,6 +62,7 @@ sample/         a small project with media, for manual testing
 src/util/       logging, strings, ids, diagnostics
 src/core/       media sources, metadata, time types, the prober
 src/project/    document model and .mrp reader/writer
+src/resolve/    named field resolvers, registered by key
 src/timeline/   sequence model and the timeline builder
 src/playback/   transport clock, frame cache, playback engine
 src/compat/v1/  importer for pre-2024 documents
@@ -71,4 +73,3 @@ tests/          unit tests (no external test dependency)
 ```
 
 See `docs/architecture.md` for how the modules fit together.
-
