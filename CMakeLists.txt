@@ -16,10 +16,6 @@ include(MeridianTargets)
 find_package(Qt6 6.2 REQUIRED COMPONENTS Core Gui Widgets)
 find_package(FFmpeg REQUIRED COMPONENTS avformat avcodec avutil)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
 # --- module graph ---------------------------------------------------------
 add_subdirectory(src/util)
 add_subdirectory(src/core)
@@ -29,6 +25,12 @@ add_subdirectory(src/timeline)
 add_subdirectory(src/playback)
 add_subdirectory(src/compat/v1)
 add_subdirectory(src/plugins)
+
+# Qt automatic tooling, kept together with the widget layer that needs it.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
 add_subdirectory(src/ui)
 add_subdirectory(src/app)
 
