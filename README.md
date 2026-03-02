@@ -73,3 +73,9 @@ tests/          unit tests (no external test dependency)
 ```
 
 See `docs/architecture.md` for how the modules fit together.
+
+## Branches
+
+- `master` — current development
+- `2026.12` — shipping release
+- `2026.4` — previous release, still supported
