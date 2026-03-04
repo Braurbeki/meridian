@@ -16,8 +16,19 @@ function(meridian_module name)
     target_link_libraries(${name} PRIVATE ${ARG_PRIVATE_DEPS})
   endif()
 
-  if(MERIDIAN_STRICT_WARNINGS)
+  if(MSVC)
+    # Sources are UTF-8; without this MSVC guesses the local codepage.
+    target_compile_options(${name} PRIVATE /utf-8)
+    target_compile_definitions(${name} PRIVATE _CRT_SECURE_NO_WARNINGS
+                                               NOMINMAX WIN32_LEAN_AND_MEAN)
+  endif()
+
+  if(MERIDIAN_STRICT_WARNINGS AND NOT MSVC)
     target_compile_options(${name} PRIVATE -Wall -Wextra -Wno-unused-parameter)
+  endif()
+
+  if(FFmpeg_FOUND)
+    target_compile_definitions(${name} PUBLIC MERIDIAN_WITH_FFMPEG=1)
   endif()
 
   string(TOUPPER "${MERIDIAN_LOG_LEVEL}" _lvl)

@@ -3,15 +3,18 @@
 #include "util/Log.h"
 #include "util/StringUtil.h"
 
-#include <sys/stat.h>
+#include <filesystem>
 
 namespace mer::project {
 namespace {
 
 bool fileExists(const std::string& path)
 {
-    struct stat st;
-    return !path.empty() && ::stat(path.c_str(), &st) == 0;
+    if (path.empty()) {
+        return false;
+    }
+    std::error_code ec;
+    return std::filesystem::exists(std::filesystem::u8path(path), ec);
 }
 
 } // namespace
