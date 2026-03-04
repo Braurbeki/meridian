@@ -6,7 +6,7 @@ function(meridian_module name)
   add_library(Meridian::${name} ALIAS ${name})
 
   target_include_directories(${name}
-    PUBLIC  "${CMAKE_SOURCE_DIR}/src"
+    PUBLIC  "${Meridian_SOURCE_DIR}/src"
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
   if(ARG_PUBLIC_DEPS)

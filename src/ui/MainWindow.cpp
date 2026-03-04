@@ -4,12 +4,15 @@
 #include "compat/v1/LegacyProjectImporter.h"
 #include "plugins/ExportPlugin.h"
 #include "plugins/PluginRegistry.h"
+#include "core/MediaProbe.h"
 #include "project/ProjectReader.h"
 #include "project/ProjectWriter.h"
 #include "ui/AppSettings.h"
+#include "ui/Theme.h"
 #include "ui/BinPanel.h"
 #include "ui/ConsolePanel.h"
 #include "ui/InspectorPanel.h"
+#include "ui/MonitorView.h"
 #include "ui/PreferencesDialog.h"
 #include "ui/TimelineRuler.h"
 #include "ui/TimelineView.h"
@@ -23,6 +26,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QScrollArea>
+#include <QSplitter>
 #include <QStatusBar>
 #include <QTimer>
 #include <QVBoxLayout>
@@ -39,7 +43,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     if (!geometry.isEmpty()) {
         restoreGeometry(geometry);
     } else {
-        resize(1560, 860);
+        resize(1560, 900);
     }
 
     tickTimer_ = new QTimer(this);
@@ -57,47 +61,89 @@ MainWindow::~MainWindow()
 
 void MainWindow::buildUi()
 {
-    auto* central = new QWidget(this);
-    auto* layout  = new QVBoxLayout(central);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
+    auto* splitter = new QSplitter(Qt::Vertical, this);
+    splitter->setChildrenCollapsible(false);
+    splitter->setHandleWidth(3);
 
-    ruler_ = new TimelineRuler(central);
-    layout->addWidget(ruler_);
+    // --- program monitor --------------------------------------------------
+    monitor_ = new MonitorView(splitter);
+    monitor_->setFrameSource(&frames_);
+    splitter->addWidget(monitor_);
 
-    auto* scroll = new QScrollArea(central);
+    // --- transport + timeline ---------------------------------------------
+    auto* lower       = new QWidget(splitter);
+    auto* lowerLayout = new QVBoxLayout(lower);
+    lowerLayout->setContentsMargins(0, 0, 0, 0);
+    lowerLayout->setSpacing(0);
+
+    transport_ = new TransportBar(lower);
+    lowerLayout->addWidget(transport_);
+
+    ruler_ = new TimelineRuler(lower);
+    lowerLayout->addWidget(ruler_);
+
+    auto* scroll = new QScrollArea(lower);
+    scroll->setFrameShape(QFrame::NoFrame);
     timelineView_ = new TimelineView(scroll);
+    timelineView_->setFrameSource(&frames_);
     scroll->setWidget(timelineView_);
     scroll->setWidgetResizable(true);
-    layout->addWidget(scroll, 1);
+    lowerLayout->addWidget(scroll, 1);
 
-    transport_ = new TransportBar(central);
-    layout->addWidget(transport_);
+    splitter->addWidget(lower);
+    splitter->setStretchFactor(0, 3);
+    splitter->setStretchFactor(1, 2);
+    splitter->setSizes({460, 300});
 
-    setCentralWidget(central);
+    setCentralWidget(splitter);
 
+    // --- docks ------------------------------------------------------------
     auto* binDock = new QDockWidget(tr("Bin"), this);
-    binPanel_     = new BinPanel(binDock);
+    binDock->setObjectName(QStringLiteral("binDock"));
+    binPanel_ = new BinPanel(binDock);
     binDock->setWidget(binPanel_);
     addDockWidget(Qt::LeftDockWidgetArea, binDock);
 
     auto* inspectorDock = new QDockWidget(tr("Inspector"), this);
-    inspector_          = new InspectorPanel(inspectorDock);
+    inspectorDock->setObjectName(QStringLiteral("inspectorDock"));
+    inspector_ = new InspectorPanel(inspectorDock);
     inspectorDock->setWidget(inspector_);
     addDockWidget(Qt::RightDockWidgetArea, inspectorDock);
 
-    auto* consoleDock = new QDockWidget(tr("Console"), this);
-    console_          = new ConsolePanel(consoleDock);
-    consoleDock->setWidget(console_);
-    addDockWidget(Qt::BottomDockWidgetArea, consoleDock);
+    consoleDock_ = new QDockWidget(tr("Console"), this);
+    consoleDock_->setObjectName(QStringLiteral("consoleDock"));
+    console_ = new ConsolePanel(consoleDock_);
+    consoleDock_->setWidget(console_);
+    addDockWidget(Qt::BottomDockWidgetArea, consoleDock_);
 
+    // Stays out of the way until something has been reported.
+    consoleDock_->hide();
+
+    // Docks default to an equal share of the window, which buries the
+    // timeline under an empty console. Give them workable proportions.
+    resizeDocks({binDock, inspectorDock}, {330, 340}, Qt::Horizontal);
+    resizeDocks({consoleDock_}, {130}, Qt::Vertical);
+
+    // --- wiring -----------------------------------------------------------
     connect(binPanel_, &BinPanel::clipSelected, inspector_, &InspectorPanel::showClip);
 
     connect(timelineView_, &TimelineView::playheadMoved, this, [this](qint64 frame) {
         engine_.seek(frame);
         ruler_->setPlayhead(frame);
         transport_->setPosition(frame);
+        monitor_->setPlayhead(frame);
     });
+    connect(timelineView_, &TimelineView::segmentClicked, this,
+            [this](const QString& segmentId) {
+                if (!timeline_) {
+                    return;
+                }
+                const auto id = util::Uuid::fromString(segmentId.toStdString());
+                if (const auto* segment = timeline_->findSegment(id)) {
+                    inspector_->showClip(
+                        QString::fromStdString(segment->clipId().toString()));
+                }
+            });
 
     connect(transport_, &TransportBar::playPauseRequested, this, [this] {
         if (engine_.state() == playback::TransportState::Playing) {
@@ -121,6 +167,7 @@ void MainWindow::buildUi()
         timelineView_->setPlayhead(frame);
         ruler_->setPlayhead(frame);
         transport_->setPosition(frame);
+        monitor_->setPlayhead(frame);
     });
 }
 
@@ -136,12 +183,22 @@ void MainWindow::buildMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(tr("&Quit"), QKeySequence::Quit, qApp, &QApplication::quit);
 
+    QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(tr("&Preferences..."), this, &MainWindow::onPreferences);
+
     QMenu* sequenceMenu = menuBar()->addMenu(tr("&Sequence"));
     sequenceMenu->addAction(tr("&Rebuild"), QKeySequence(Qt::Key_F5), this,
                             &MainWindow::onRebuildTimeline);
 
-    QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
-    editMenu->addAction(tr("&Preferences..."), this, &MainWindow::onPreferences);
+    QMenu* viewMenu = menuBar()->addMenu(tr("&View"));
+    viewMenu->addAction(tr("&Fit Sequence"), QKeySequence(Qt::Key_Backslash), this,
+                        &MainWindow::onFitSequence);
+    QAction* overlay = viewMenu->addAction(tr("Monitor &Overlay"), this,
+                                           &MainWindow::onToggleOverlay);
+    overlay->setCheckable(true);
+    overlay->setChecked(true);
+    viewMenu->addSeparator();
+    viewMenu->addAction(consoleDock_->toggleViewAction());
 
     QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(tr("&About Meridian"), this, &MainWindow::onAbout);
@@ -166,6 +223,7 @@ void MainWindow::onOpenProject()
 bool MainWindow::openProject(const QString& path)
 {
     diagnostics_.clear();
+    frames_.clear();
 
     const std::string stdPath = path.toStdString();
 
@@ -177,7 +235,7 @@ bool MainWindow::openProject(const QString& path)
         project_ = reader.read(stdPath, diagnostics_);
     }
 
-    console_->show(diagnostics_);
+    showDiagnostics();
 
     if (!project_) {
         QMessageBox::warning(this, tr("Open Project"),
@@ -187,7 +245,7 @@ bool MainWindow::openProject(const QString& path)
 
     if (AppSettings::instance().probeOnOpen()) {
         project_->media().refreshAll(diagnostics_);
-        console_->show(diagnostics_);
+        showDiagnostics();
     }
 
     AppSettings::instance().setLastProjectDir(QFileInfo(path).absolutePath());
@@ -195,6 +253,10 @@ bool MainWindow::openProject(const QString& path)
 
     rebuildTimeline();
     refreshPanels();
+
+    // Geometry is not final until the event loop has run once.
+    QTimer::singleShot(0, this, &MainWindow::onFitSequence);
+
     setStatus(tr("Opened %1").arg(path));
     return true;
 }
@@ -204,6 +266,7 @@ void MainWindow::rebuildTimeline()
     if (!project_ || project_->timelines().empty()) {
         timeline_.reset();
         timelineView_->setTimeline(nullptr);
+        monitor_->setTimeline(nullptr);
         return;
     }
 
@@ -219,13 +282,15 @@ void MainWindow::rebuildTimeline()
     timeline_ = builder.build(project_->timelines().front(), diagnostics_);
 
     timelineView_->setTimeline(timeline_);
+    monitor_->setTimeline(timeline_);
     ruler_->setRate(timeline_->rate());
     ruler_->setDuration(timeline_->duration());
+    ruler_->setPixelsPerFrame(timelineView_->pixelsPerFrame());
     transport_->setRate(timeline_->rate());
     transport_->setDuration(timeline_->duration());
     engine_.setTimeline(timeline_);
 
-    console_->show(diagnostics_);
+    showDiagnostics();
 }
 
 void MainWindow::refreshPanels()
@@ -260,7 +325,7 @@ void MainWindow::onSaveProjectAs()
     if (writer.write(*project_, path.toStdString(), diagnostics_)) {
         setStatus(tr("Saved %1").arg(path));
     }
-    console_->show(diagnostics_);
+    showDiagnostics();
 }
 
 void MainWindow::onExportCutList()
@@ -295,12 +360,33 @@ void MainWindow::onPreferences()
     }
 }
 
+void MainWindow::showDiagnostics()
+{
+    console_->show(diagnostics_);
+    if (diagnostics_.size() > 0) {
+        consoleDock_->show();
+    }
+}
+
+void MainWindow::onFitSequence()
+{
+    timelineView_->zoomToFit();
+    ruler_->setPixelsPerFrame(timelineView_->pixelsPerFrame());
+}
+
+void MainWindow::onToggleOverlay()
+{
+    monitor_->setShowOverlay(!monitor_->showOverlay());
+}
+
 void MainWindow::onAbout()
 {
     QMessageBox::about(
         this, tr("About Meridian"),
-        tr("<b>Meridian</b> %1<br><br>Sequence review and conform tool.")
-            .arg(QStringLiteral(MERIDIAN_VERSION_STRING)));
+        tr("<b>Meridian</b> %1<br><br>Sequence review and conform tool."
+           "<br><br>Media backend: %2")
+            .arg(QStringLiteral(MERIDIAN_VERSION_STRING),
+                 QString::fromStdString(core::MediaProbe::ffmpegVersionString())));
 }
 
 } // namespace mer::ui

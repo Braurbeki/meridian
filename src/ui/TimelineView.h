@@ -1,6 +1,9 @@
 #pragma once
+#include "playback/FrameSource.h"
 #include "timeline/Timeline.h"
 
+#include <QHash>
+#include <QPixmap>
 #include <QWidget>
 
 namespace mer::ui {
@@ -20,11 +23,21 @@ public:
     void setTimeline(timeline::TimelinePtr timeline);
     const timeline::TimelinePtr& timeline() const { return timeline_; }
 
+    /// Optional: supplies head-frame thumbnails for video segments.
+    void setFrameSource(playback::FrameSource* source);
+
     void setPlayhead(qint64 frame);
     qint64 playhead() const { return playhead_; }
 
-    void  setPixelsPerFrame(double scale);
+    void   setPixelsPerFrame(double scale);
     double pixelsPerFrame() const { return pixelsPerFrame_; }
+
+    void setSelectedSegment(const QString& segmentId);
+
+    /// Picks a zoom that shows the whole sequence in the space available.
+    void zoomToFit();
+
+    static constexpr int kHeadWidth = 132;
 
     QSize sizeHint() const override;
 
@@ -39,22 +52,27 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
 
 private:
-    void paintTrackHead(QPainter& painter, const timeline::Track& track,
+    void paintTrackHead(QPainter& painter, const timeline::Track& track, int index,
                         const QRect& rect) const;
     void paintSegment(QPainter& painter, const timeline::Segment& segment,
-                      const QRect& rect) const;
+                      const timeline::Track& track, const QRect& rect);
     void paintPlayhead(QPainter& painter) const;
+
+    QPixmap thumbnailFor(const timeline::Segment& segment, int height);
 
     QRect  trackRect(int index) const;
     QRect  segmentRect(const timeline::Segment& segment, const QRect& track) const;
     qint64 frameAtX(int x) const;
 
-    static constexpr int kHeadWidth = 96;
+    timeline::TimelinePtr  timeline_;
+    playback::FrameSource* source_ = nullptr;
 
-    timeline::TimelinePtr timeline_;
-    qint64                playhead_       = 0;
-    double                pixelsPerFrame_ = 4.0;
-    int                   trackHeight_    = 56;
+    qint64 playhead_       = 0;
+    double pixelsPerFrame_ = 4.0;
+    int    trackHeight_    = 64;
+    QString selectedId_;
+
+    QHash<QString, QPixmap> thumbnails_;
 };
 
 } // namespace mer::ui

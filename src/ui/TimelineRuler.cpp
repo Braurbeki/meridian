@@ -1,12 +1,15 @@
 #include "ui/TimelineRuler.h"
 
+#include "ui/Theme.h"
+#include "ui/TimelineView.h"
+
 #include <QPainter>
 
 namespace mer::ui {
 
 TimelineRuler::TimelineRuler(QWidget* parent) : QWidget(parent)
 {
-    setFixedHeight(24);
+    setFixedHeight(26);
 }
 
 void TimelineRuler::setRate(core::Rational rate)
@@ -47,25 +50,44 @@ int TimelineRuler::tickIntervalFrames() const
 void TimelineRuler::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
-    painter.fillRect(rect(), QColor(0x1c, 0x1e, 0x22));
-    painter.setPen(QColor(0x9a, 0x9e, 0xa6));
+    painter.fillRect(rect(), theme::ruler());
 
     const int interval = tickIntervalFrames();
-    const int offset   = 96;  // matches TimelineView::kHeadWidth
+    const int offset   = TimelineView::kHeadWidth;
+
+    painter.fillRect(QRect(0, 0, offset, height()), theme::trackHead());
+    painter.setPen(QPen(QColor(0x14, 0x16, 0x1a), 1));
+    painter.drawLine(offset, 0, offset, height());
+    painter.drawLine(0, height() - 1, width(), height() - 1);
+
+    QFont small = painter.font();
+    small.setPointSizeF(small.pointSizeF() * 0.85);
+    painter.setFont(small);
 
     for (qint64 frame = 0; frame <= duration_; frame += interval) {
         const int x = offset + static_cast<int>(frame * pixelsPerFrame_);
         if (x > width()) {
             break;
         }
-        painter.drawLine(x, height() - 6, x, height());
-        painter.drawText(x + 3, height() - 8,
+        painter.setPen(theme::textFaint());
+        painter.drawLine(x, height() - 7, x, height() - 1);
+
+        // Half-way tick, unlabelled.
+        const int mid = x + static_cast<int>(interval * pixelsPerFrame_ / 2.0);
+        if (mid < width()) {
+            painter.drawLine(mid, height() - 4, mid, height() - 1);
+        }
+
+        painter.setPen(theme::textDim());
+        painter.drawText(x + 4, height() - 9,
                          QString::fromStdString(core::formatTimecode(frame, rate_)));
     }
 
     const int px = offset + static_cast<int>(playhead_ * pixelsPerFrame_);
-    painter.setPen(QPen(QColor(0xf2, 0x6d, 0x5b), 2));
-    painter.drawLine(px, 0, px, height());
+    if (px >= offset) {
+        painter.setPen(QPen(theme::playhead(), 1));
+        painter.drawLine(px, 0, px, height());
+    }
 }
 
 } // namespace mer::ui

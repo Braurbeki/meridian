@@ -19,9 +19,9 @@ find_package(Qt6 6.2 REQUIRED COMPONENTS Core Gui Widgets)
 # the media; without it the prober only establishes that the file is there.
 # Nothing else in the application changes.
 if(MERIDIAN_WITH_FFMPEG STREQUAL "auto")
-  find_package(FFmpeg QUIET COMPONENTS avformat avcodec avutil)
+  find_package(FFmpeg QUIET COMPONENTS avformat avcodec avutil swscale)
 elseif(MERIDIAN_WITH_FFMPEG)
-  find_package(FFmpeg REQUIRED COMPONENTS avformat avcodec avutil)
+  find_package(FFmpeg REQUIRED COMPONENTS avformat avcodec avutil swscale)
 endif()
 
 if(FFmpeg_FOUND)

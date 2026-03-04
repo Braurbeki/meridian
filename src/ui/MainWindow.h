@@ -1,10 +1,13 @@
 #pragma once
+#include "playback/FrameSource.h"
 #include "playback/PlaybackEngine.h"
 #include "project/Project.h"
 #include "timeline/Timeline.h"
 #include "util/Diagnostics.h"
 
 #include <QMainWindow>
+
+class QDockWidget;
 #include <memory>
 
 class QTimer;
@@ -14,6 +17,7 @@ namespace mer::ui {
 class BinPanel;
 class ConsolePanel;
 class InspectorPanel;
+class MonitorView;
 class TimelineRuler;
 class TimelineView;
 class TransportBar;
@@ -34,6 +38,9 @@ private slots:
     void onExportCutList();
     void onRebuildTimeline();
     void onAbout();
+    void onToggleOverlay();
+    void onFitSequence();
+    void showDiagnostics();
 
 private:
     void buildUi();
@@ -45,13 +52,16 @@ private:
     std::unique_ptr<project::Project> project_;
     timeline::TimelinePtr             timeline_;
     playback::PlaybackEngine          engine_;
+    playback::FrameSource             frames_;
     util::DiagnosticSink              diagnostics_;
 
+    MonitorView*    monitor_      = nullptr;
     TimelineView*   timelineView_ = nullptr;
     TimelineRuler*  ruler_        = nullptr;
     BinPanel*       binPanel_     = nullptr;
     InspectorPanel* inspector_    = nullptr;
     ConsolePanel*   console_      = nullptr;
+    QDockWidget*    consoleDock_  = nullptr;
     TransportBar*   transport_    = nullptr;
     QTimer*         tickTimer_    = nullptr;
 };
