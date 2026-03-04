@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     if (!geometry.isEmpty()) {
         restoreGeometry(geometry);
     } else {
-        resize(1280, 760);
+        resize(1560, 860);
     }
 
     tickTimer_ = new QTimer(this);
