@@ -3,16 +3,21 @@
 #include "util/Log.h"
 #include "util/StringUtil.h"
 
+#include <cstdio>
+#include <filesystem>
+
+#if MERIDIAN_WITH_FFMPEG
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
 #include <libavutil/dict.h>
 }
-
-#include <cstdio>
+#endif
 
 namespace mer::core {
+
+#if MERIDIAN_WITH_FFMPEG
 namespace {
 
 StreamKind kindFromAv(int type)
@@ -68,8 +73,7 @@ bool MediaProbe::probe(MediaSource& source, util::DiagnosticSink& sink) const
     if (rc < 0) {
         char err[AV_ERROR_MAX_STRING_SIZE] = {0};
         av_strerror(rc, err, sizeof(err));
-        sink.warn("media.offline",
-                  "Cannot open media: " + std::string(err), target);
+        sink.warn("media.offline", "Cannot open media: " + std::string(err), target);
         source.setOnline(false);
         return false;
     }
@@ -118,5 +122,46 @@ bool MediaProbe::probe(MediaSource& source, util::DiagnosticSink& sink) const
                        << " duration=" << source.duration();
     return true;
 }
+
+#else  // ---- no FFmpeg in this build --------------------------------------
+
+bool MediaProbe::ffmpegAvailable()
+{
+    return false;
+}
+
+std::string MediaProbe::ffmpegVersionString()
+{
+    return "built without FFmpeg";
+}
+
+/// Presence-only probe. Container facts (duration, streams, tags) are not
+/// available, so we fall back to what the project file already recorded and
+/// only establish whether the media is where it claims to be.
+bool MediaProbe::probe(MediaSource& source, util::DiagnosticSink& sink) const
+{
+    const std::string& target =
+        source.resolvedPath().empty() ? source.path() : source.resolvedPath();
+
+    if (target.empty()) {
+        sink.warn("media.nopath", "Media source has no path", source.id().toString());
+        source.setOnline(false);
+        return false;
+    }
+
+    std::error_code ec;
+    if (!std::filesystem::is_regular_file(std::filesystem::u8path(target), ec)) {
+        sink.warn("media.offline", "Media not found at the recorded path", target);
+        source.setOnline(false);
+        return false;
+    }
+
+    source.setOnline(true);
+    MER_DEBUG("media") << "located " << target
+                       << " (no container inspection in this build)";
+    return true;
+}
+
+#endif
 
 } // namespace mer::core
