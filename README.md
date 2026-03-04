@@ -3,36 +3,64 @@
 Sequence review and conform tool. Opens a project, builds a timeline from it,
 plays it back, exports cut lists. Not an editor — there is no trim model.
 
+## Requirements
+
+- **Qt 6.2 or newer** (Widgets)
+- **CMake 3.24 or newer**
+- A C++17 compiler — MSVC 2019+, Clang 12+, or GCC 9+
+
+FFmpeg is **optional**. If the development headers are on the system, CMake
+picks them up and the media prober reads duration, streams and container tags.
+Without them the prober only establishes that a file is where the project says
+it is, and everything else behaves identically. There is no vendored
+dependency tree and no package manager wrapper — CMake finds what is
+installed.
+
 ## Building
 
-The supported toolchain is the container in `docker/`. It pins Qt 6, FFmpeg
-and CMake so that a build is the same on everyone's machine.
+### Windows
 
-```sh
-docker build -t meridian-build -f docker/Dockerfile .
-docker run --rm -it -v "$PWD":/work -w /work meridian-build bash
+Install Qt with the [official installer](https://www.qt.io/download-qt-installer)
+(pick the `msvc2022_64` component) and Visual Studio 2022 with the C++
+workload. Then, from a Developer PowerShell:
 
-# inside the container:
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
-cmake --build build
-ctest --test-dir build --output-on-failure
+```powershell
+cmake -S . -B build -DCMAKE_PREFIX_PATH="C:/Qt/6.8.0/msvc2022_64"
+cmake --build build --config Debug
+.\build\bin\Debug\meridian.exe sample\RiverdaleDoc.mrp
 ```
 
-Building on the host directly works too, if you have Qt 6.2+, FFmpeg
-development headers and CMake 3.24+ on your path. There is no vendored
-dependency tree and no package manager wrapper — CMake finds what is
-installed. See `cmake/FindFFmpeg.cmake` if the FFmpeg probe fails.
+If the executable cannot find the Qt DLLs, run
+`C:\Qt\6.8.0\msvc2022_64\bin\windeployqt.exe build\bin\Debug\meridian.exe`
+once, or put that `bin` directory on `PATH`.
 
-VS Code users: `.devcontainer/` opens the same image.
-
-## Running
+### macOS
 
 ```sh
+brew install qt          # brew install ffmpeg as well, if you want probing
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
+cmake --build build -j
 ./build/bin/meridian sample/RiverdaleDoc.mrp
 ```
 
-The GUI needs a display. Inside the container without one, use the headless
-entry points:
+### Linux
+
+```sh
+sudo apt install build-essential cmake qt6-base-dev   # + libavformat-dev, optional
+cmake -S . -B build
+cmake --build build -j
+./build/bin/meridian sample/RiverdaleDoc.mrp
+```
+
+### Tests
+
+```sh
+ctest --test-dir build --output-on-failure
+```
+
+## Running without a display
+
+The GUI needs a window server. These do not:
 
 ```sh
 ./build/bin/meridian --dump-labels sample/RiverdaleDoc.mrp
@@ -54,8 +82,7 @@ Channels: `project`, `media`, `timeline`, `playback`, `plugins`, `compat`,
 ## Layout
 
 ```
-cmake/          build helpers and the FFmpeg locator
-docker/         the supported toolchain
+cmake/          build helpers and the optional FFmpeg locator
 docs/           architecture notes, design records, support tickets
 sample/         a small project with media, for manual testing
 src/util/       logging, strings, ids, diagnostics
@@ -71,4 +98,3 @@ tests/          unit tests (no external test dependency)
 ```
 
 See `docs/architecture.md` for how the modules fit together.
-

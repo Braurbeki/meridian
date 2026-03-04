@@ -12,9 +12,9 @@ std::string truncateMiddle(const std::string& text, std::size_t limit)
     if (text.size() <= limit || limit < 5) {
         return text;
     }
-    const std::size_t head = (limit - 1) / 2;
-    const std::size_t tail = limit - 1 - head;
-    return text.substr(0, head) + "…" + text.substr(text.size() - tail);
+    const std::size_t head = (limit - 3) / 2;
+    const std::size_t tail = limit - 3 - head;
+    return text.substr(0, head) + "..." + text.substr(text.size() - tail);
 }
 
 } // namespace

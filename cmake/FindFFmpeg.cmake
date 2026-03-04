@@ -18,10 +18,10 @@ foreach(_comp ${FFmpeg_FIND_COMPONENTS})
     endif()
   else()
     set(_ff_found_components FALSE)
-    message(STATUS "FFmpeg: missing component '${_comp}'")
+    if(NOT FFmpeg_FIND_QUIETLY)
+      message(STATUS "FFmpeg: missing component '${_comp}'")
+    endif()
   endif()
 endforeach()
 
-find_package_handle_standard_args(FFmpeg
-  REQUIRED_VARS _ff_found_components
-  FAIL_MESSAGE "FFmpeg development headers not found. See README for setup.")
+find_package_handle_standard_args(FFmpeg REQUIRED_VARS _ff_found_components)

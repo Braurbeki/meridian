@@ -35,8 +35,9 @@ diagnostic sink that carries non-fatal problems up to the Console panel.
 
 ### core
 `MediaSource` (a file the project references), `MetadataDict` /
-`MetadataValue` (weakly typed tag bags), rational time types, and the
-libavformat-backed prober.
+`MetadataValue` (weakly typed tag bags), rational time types, and the media
+prober — libavformat-backed when FFmpeg is available at configure time,
+presence-only when it is not.
 
 ### project
 The document model — clips, bins, and the *serialised* form of a sequence
