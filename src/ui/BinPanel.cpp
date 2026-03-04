@@ -13,6 +13,10 @@ BinPanel::BinPanel(QWidget* parent) : QTreeWidget(parent)
     setRootIsDecorated(false);
     setAlternatingRowColors(true);
     header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    setMinimumWidth(380);
 
     connect(this, &QTreeWidget::itemSelectionChanged, this, [this] {
         const auto items = selectedItems();

@@ -22,7 +22,10 @@ InspectorPanel::InspectorPanel(QWidget* parent) : QWidget(parent)
     table_->setColumnCount(3);
     table_->setHorizontalHeaderLabels({tr("Source"), tr("Field"), tr("Value")});
     table_->verticalHeader()->setVisible(false);
+    table_->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    table_->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     table_->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    setMinimumWidth(320);
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     layout->addWidget(table_);
 }
