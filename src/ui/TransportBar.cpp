@@ -1,5 +1,7 @@
 #include "ui/TransportBar.h"
 
+#include "ui/Theme.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -10,7 +12,9 @@ namespace mer::ui {
 TransportBar::TransportBar(QWidget* parent) : QWidget(parent)
 {
     auto* layout = new QHBoxLayout(this);
-    layout->setContentsMargins(8, 4, 8, 4);
+    layout->setContentsMargins(10, 6, 10, 6);
+    layout->setSpacing(6);
+    setAutoFillBackground(true);
 
     auto* back = new QPushButton(QStringLiteral("<"), this);
     back->setFixedWidth(32);
@@ -35,9 +39,12 @@ TransportBar::TransportBar(QWidget* parent) : QWidget(parent)
     layout->addWidget(scrubber_, 1);
 
     timecode_ = new QLabel(this);
-    timecode_->setMinimumWidth(110);
+    timecode_->setMinimumWidth(190);
     timecode_->setAlignment(Qt::AlignCenter);
-    timecode_->setStyleSheet("font-family: monospace;");
+    timecode_->setStyleSheet(
+        "font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;"
+        "font-size: 12px; color: #d8dbe0; background: #14161a;"
+        "border: 1px solid #33383f; border-radius: 4px; padding: 4px 8px;");
     layout->addWidget(timecode_);
 
     connect(playButton_, &QPushButton::clicked, this,

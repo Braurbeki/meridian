@@ -40,6 +40,16 @@ void AppSettings::setShowSourceFilename(bool on)
     settings_.setValue("timeline/showSourceFilename", on);
 }
 
+double AppSettings::pixelsPerFrame() const
+{
+    return settings_.value("timeline/pixelsPerFrame", 4.0).toDouble();
+}
+
+void AppSettings::setPixelsPerFrame(double scale)
+{
+    settings_.setValue("timeline/pixelsPerFrame", scale);
+}
+
 int AppSettings::maxLabelChars() const
 {
     return settings_.value("timeline/maxLabelChars", 64).toInt();
