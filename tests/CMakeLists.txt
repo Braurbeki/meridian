@@ -6,7 +6,7 @@ target_include_directories(mer_testmain PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 function(meridian_test name)
   add_executable(${name} ${name}.cpp)
   target_link_libraries(${name} PRIVATE mer_testmain ${ARGN})
-  target_include_directories(${name} PRIVATE "${CMAKE_SOURCE_DIR}/src")
+  target_include_directories(${name} PRIVATE "${Meridian_SOURCE_DIR}/src")
   add_test(NAME ${name} COMMAND ${name})
 endfunction()
 

@@ -26,6 +26,9 @@ public:
     bool showSourceFilename() const;
     void setShowSourceFilename(bool on);
 
+    double pixelsPerFrame() const;
+    void   setPixelsPerFrame(double scale);
+
     int  maxLabelChars() const;
     void setMaxLabelChars(int chars);
 

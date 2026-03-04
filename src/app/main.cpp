@@ -1,6 +1,7 @@
 #include "CommandLine.h"
 
 #include "ui/MainWindow.h"
+#include "ui/Theme.h"
 #include "util/Log.h"
 
 #include <QApplication>
@@ -35,6 +36,7 @@ int main(int argc, char** argv)
     QApplication application(argc, argv);
     QApplication::setApplicationName(QStringLiteral("Meridian"));
     QApplication::setApplicationVersion(QStringLiteral(MERIDIAN_VERSION_STRING));
+    mer::ui::applyTheme(application);
 
     mer::ui::MainWindow window;
     window.show();

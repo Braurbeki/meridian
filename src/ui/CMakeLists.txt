@@ -1,6 +1,8 @@
 meridian_module(mer_ui
   SOURCES
     AppSettings.cpp
+    Theme.cpp
+    MonitorView.cpp
     MainWindow.cpp
     TimelineView.cpp
     TimelineRuler.cpp
