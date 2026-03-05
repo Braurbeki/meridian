@@ -182,7 +182,10 @@ void MonitorView::paintOverlay(QPainter& painter, const QRect& target) const
                      caption_.isEmpty() ? tr("(no name)") : caption_);
 
     QFont mono = f;
-    mono.setFamily(QStringLiteral("Menlo, Consolas, DejaVu Sans Mono, monospace"));
+    // setFamily() takes one family, not a fallback list -- Qt would look for a
+    // face literally named "Menlo, Consolas, ..." and fall back to the default.
+    mono.setFamilies({QStringLiteral("Menlo"), QStringLiteral("Consolas"),
+                      QStringLiteral("DejaVu Sans Mono"), QStringLiteral("monospace")});
     painter.setFont(mono);
     painter.setPen(QColor(0xb6, 0xbc, 0xc6));
 
