@@ -8,11 +8,16 @@ plays it back, exports cut lists. Not an editor — there is no trim model.
 You need CMake 3.24+, a C++17 compiler, and:
 
 ```sh
-pip install conan aqtinstall
+pipx install conan
+pipx install aqtinstall
 conan profile detect
 ```
 
-Qt comes from the official binaries, FFmpeg from Conan.
+(`pip install --user conan aqtinstall` also works where your Python allows
+it; many distributions and Homebrew now refuse it under PEP 668.)
+
+Qt comes from the official binaries — `aqtinstall` is a scripted downloader
+for them, no Qt Account needed — and FFmpeg comes from Conan.
 
 Install Qt once — pick the line for your platform:
 
