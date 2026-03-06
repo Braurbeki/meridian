@@ -14,15 +14,21 @@ conan profile detect
 
 Qt comes from the official binaries, FFmpeg from Conan.
 
-```sh
-# Qt, once. Swap the last two arguments for your platform:
-#   macOS    desktop 6.8.0 clang_64
-#   Windows  desktop 6.8.0 win64_msvc2022_64
-#   Linux    desktop 6.8.0 linux_gcc_64
-aqt install-qt mac desktop 6.8.0 clang_64 -O ~/Qt
+Install Qt once — pick the line for your platform:
 
+```sh
+aqt install-qt windows desktop 6.8.0 win64_msvc2022_64 -O ~/Qt
+aqt install-qt linux   desktop 6.8.0 linux_gcc_64      -O ~/Qt
+aqt install-qt mac     desktop 6.8.0 clang_64          -O ~/Qt
+```
+
+Then, from the repository root:
+
+```sh
 conan install . --build=missing
-cmake --preset conan-release -DCMAKE_PREFIX_PATH=~/Qt/6.8.0/macos
+cmake --preset conan-release -DCMAKE_PREFIX_PATH=~/Qt/6.8.0/msvc2022_64   # Windows
+cmake --preset conan-release -DCMAKE_PREFIX_PATH=~/Qt/6.8.0/gcc_64        # Linux
+cmake --preset conan-release -DCMAKE_PREFIX_PATH=~/Qt/6.8.0/macos         # macOS
 cmake --build --preset conan-release
 ctest --preset conan-release
 ```
