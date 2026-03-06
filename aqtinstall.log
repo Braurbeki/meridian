@@ -1,0 +1,4 @@
+2026-08-30 19:12:12,419 - aqt.main - INFO - installer 8480038272 aqtinstall(aqt) v3.3.0 on Python 3.14.4 [CPython Clang 17.0.0 (clang-1700.6.4.2)]
+2026-08-30 19:12:12,554 - aqt.helper - DEBUG - helper 8480038272 Attempt to download checksum at https://download.qt.io/online/qtsdkrepository/mac_x64/desktop/qt6_680/qt6_680/Updates.xml.sha256
+2026-08-30 19:12:13,336 - aqt.helper - DEBUG - helper 8480038272 Attempt to download checksum at https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_680/qt6_680/Updates.xml.sha256
+2026-08-30 19:12:13,919 - aqt.helper - DEBUG - helper 8480038272 Attempt to download checksum at https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt6_680/qt6_680/Updates.xml.sha256
