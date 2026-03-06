@@ -4,20 +4,16 @@
 #include "util/StringUtil.h"
 
 #include <cstdio>
-#include <filesystem>
 
-#if MERIDIAN_WITH_FFMPEG
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
 #include <libavutil/dict.h>
 }
-#endif
 
 namespace mer::core {
 
-#if MERIDIAN_WITH_FFMPEG
 namespace {
 
 StreamKind kindFromAv(int type)
@@ -42,11 +38,6 @@ void copyTags(const AVDictionary* src, MetadataDict& dst)
 }
 
 } // namespace
-
-bool MediaProbe::ffmpegAvailable()
-{
-    return true;
-}
 
 std::string MediaProbe::ffmpegVersionString()
 {
@@ -123,45 +114,5 @@ bool MediaProbe::probe(MediaSource& source, util::DiagnosticSink& sink) const
     return true;
 }
 
-#else  // ---- no FFmpeg in this build --------------------------------------
-
-bool MediaProbe::ffmpegAvailable()
-{
-    return false;
-}
-
-std::string MediaProbe::ffmpegVersionString()
-{
-    return "built without FFmpeg";
-}
-
-/// Presence-only probe. Container facts (duration, streams, tags) are not
-/// available, so we fall back to what the project file already recorded and
-/// only establish whether the media is where it claims to be.
-bool MediaProbe::probe(MediaSource& source, util::DiagnosticSink& sink) const
-{
-    const std::string& target =
-        source.resolvedPath().empty() ? source.path() : source.resolvedPath();
-
-    if (target.empty()) {
-        sink.warn("media.nopath", "Media source has no path", source.id().toString());
-        source.setOnline(false);
-        return false;
-    }
-
-    std::error_code ec;
-    if (!std::filesystem::is_regular_file(std::filesystem::u8path(target), ec)) {
-        sink.warn("media.offline", "Media not found at the recorded path", target);
-        source.setOnline(false);
-        return false;
-    }
-
-    source.setOnline(true);
-    MER_DEBUG("media") << "located " << target
-                       << " (no container inspection in this build)";
-    return true;
-}
-
-#endif
 
 } // namespace mer::core

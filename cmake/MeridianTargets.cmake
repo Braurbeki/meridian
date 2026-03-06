@@ -27,9 +27,6 @@ function(meridian_module name)
     target_compile_options(${name} PRIVATE -Wall -Wextra -Wno-unused-parameter)
   endif()
 
-  if(FFmpeg_FOUND)
-    target_compile_definitions(${name} PUBLIC MERIDIAN_WITH_FFMPEG=1)
-  endif()
 
   string(TOUPPER "${MERIDIAN_LOG_LEVEL}" _lvl)
   target_compile_definitions(${name} PUBLIC MERIDIAN_LOG_FLOOR=MER_LOG_${_lvl})
