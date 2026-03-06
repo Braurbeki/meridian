@@ -8,7 +8,5 @@ meridian_module(mer_playback
   PUBLIC_DEPS
     Meridian::mer_timeline)
 
-if(FFmpeg_FOUND)
-  target_link_libraries(mer_playback PRIVATE
-    FFmpeg::avformat FFmpeg::avcodec FFmpeg::avutil FFmpeg::swscale)
-endif()
+target_link_libraries(mer_playback PRIVATE
+  ffmpeg::avformat ffmpeg::avcodec ffmpeg::avutil ffmpeg::swscale)

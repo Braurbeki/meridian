@@ -2,21 +2,17 @@
 
 #include "util/Log.h"
 
-#if MERIDIAN_WITH_FFMPEG
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
 #include <libswscale/swscale.h>
 }
-#endif
 
 #include <algorithm>
 #include <cmath>
 
 namespace mer::playback {
-
-#if MERIDIAN_WITH_FFMPEG
 
 struct VideoDecoder::Impl {
     std::string      path;
@@ -89,8 +85,6 @@ VideoDecoder::VideoDecoder(std::string path) : impl_(std::make_unique<Impl>())
 }
 
 VideoDecoder::~VideoDecoder() = default;
-
-bool VideoDecoder::available() { return true; }
 
 bool VideoDecoder::isOpen() const { return impl_ && impl_->codec != nullptr; }
 
@@ -205,36 +199,5 @@ bool VideoDecoder::frameAt(double seconds, int maxWidth, CachedFrame& out)
     return true;
 }
 
-#else  // ---- no FFmpeg: views fall back to a slate -------------------------
-
-struct VideoDecoder::Impl {
-    std::string path;
-};
-
-VideoDecoder::VideoDecoder(std::string path) : impl_(std::make_unique<Impl>())
-{
-    impl_->path = std::move(path);
-}
-
-VideoDecoder::~VideoDecoder() = default;
-
-bool VideoDecoder::available() { return false; }
-bool VideoDecoder::isOpen() const { return false; }
-int  VideoDecoder::nativeWidth() const { return 0; }
-int  VideoDecoder::nativeHeight() const { return 0; }
-double VideoDecoder::duration() const { return 0.0; }
-
-bool VideoDecoder::open(util::DiagnosticSink&)
-{
-    MER_DEBUG("playback") << "decoding unavailable in this build: " << impl_->path;
-    return false;
-}
-
-bool VideoDecoder::frameAt(double, int, CachedFrame&)
-{
-    return false;
-}
-
-#endif
 
 } // namespace mer::playback
