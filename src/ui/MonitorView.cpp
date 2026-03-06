@@ -114,8 +114,7 @@ void MonitorView::refreshFrame()
 
     playback::CachedFrame frame;
     if (!source_->frame(path, seconds, targetWidth, playhead_, frame)) {
-        status_ = playback::VideoDecoder::available() ? tr("No video stream")
-                                                      : tr("Built without a decoder");
+        status_ = tr("No video stream");
         return;
     }
 

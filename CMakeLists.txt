@@ -15,20 +15,7 @@ include(MeridianTargets)
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Core Gui Widgets)
 
-# FFmpeg is optional. With it we read duration, streams and container tags off
-# the media; without it the prober only establishes that the file is there.
-# Nothing else in the application changes.
-if(MERIDIAN_WITH_FFMPEG STREQUAL "auto")
-  find_package(FFmpeg QUIET COMPONENTS avformat avcodec avutil swscale)
-elseif(MERIDIAN_WITH_FFMPEG)
-  find_package(FFmpeg REQUIRED COMPONENTS avformat avcodec avutil swscale)
-endif()
-
-if(FFmpeg_FOUND)
-  message(STATUS "FFmpeg: enabled")
-else()
-  message(STATUS "FFmpeg: not used (media will be probed for presence only)")
-endif()
+find_package(ffmpeg REQUIRED)
 
 # --- module graph ---------------------------------------------------------
 add_subdirectory(src/util)

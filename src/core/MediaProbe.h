@@ -27,7 +27,6 @@ public:
     /// pushed to `sink`.
     bool probe(MediaSource& source, util::DiagnosticSink& sink) const;
 
-    static bool ffmpegAvailable();
     static std::string ffmpegVersionString();
 
 private:

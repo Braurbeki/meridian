@@ -14,9 +14,8 @@ namespace mer::playback {
 /// with realtime. Frames come back as packed RGB24 at or below a requested
 /// width.
 ///
-/// The FFmpeg types stay behind the PIMPL so that a build without FFmpeg
-/// compiles this header unchanged; in that configuration open() reports
-/// failure and the views fall back to a slate.
+/// The FFmpeg types stay behind the PIMPL so that nothing above this header
+/// has to know about them.
 class VideoDecoder {
 public:
     explicit VideoDecoder(std::string path);
@@ -35,8 +34,6 @@ public:
     int    nativeWidth() const;
     int    nativeHeight() const;
     double duration() const;
-
-    static bool available();
 
 private:
     struct Impl;
